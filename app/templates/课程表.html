@@ -1,0 +1,978 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>课程表</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="{% static 'css/all.css' %}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+          rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="{% static 'css/sb-admin-2.css' %}" rel="stylesheet">
+    <link href={% static 'css/bootstrap.css' %}/>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #calendar-container {
+            width: 80%;
+            margin: 50px auto;
+        }
+
+        .fc-timegrid-slot {
+            height: 60px; /* 调整为你希望的高度 */
+            line-height: 60px; /* 保持文本垂直居中 */
+        }
+
+        .modal-dialog {
+            max-width: 700px;
+        }
+
+        .modal-content {
+            height: 550px;
+        }
+
+        .modal-header {
+            background-color: #007bff; /* 蓝色主体 */
+            color: white;
+        }
+
+        .modal-footer {
+            background-color: #f1f1f1;
+        }
+
+        .form-control {
+            margin-bottom: 10px;
+        }
+
+        .table-container {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        /* CSS 样式调整 */
+        .fc-event {
+            margin-bottom: 2px; /* 调整事件之间的间距，防止覆盖 */
+        }
+
+
+        .custom-modal .modal-dialog {
+            display: flex;
+            align-items: center;
+            min-height: calc(100% - 1rem);
+        }
+
+        .custom-modal .modal-content {
+            max-height: 50vh; /* 设置模态框高度为视口高度的一半 */
+            overflow-y: auto; /* 使内容可滚动 */
+            margin-bottom: 250px;
+        }
+
+        /* 点名模态框的单独样式 */
+        .roll-call-modal .modal-dialog {
+            display: flex;
+            align-items: flex-start; /* 确保模态框顶部对齐 */
+            justify-content: center; /* 水平居中 */
+            min-height: calc(100% - 20px); /* 确保模态框高度 */
+            margin-top: 20px; /* 距离顶部 20px */
+            max-width: 90%; /* 设置模态框宽度为视口宽度的 90% */
+        }
+
+        .roll-call-modal .modal-content {
+            max-height: 80vh; /* 设置模态框高度为视口高度的 80% */
+            overflow-y: auto; /* 使内容可滚动 */
+            border-radius: 20px; /* 设置圆角半径为 20px */
+        }
+
+        /* 优化表格样式 */
+        .table-sm th, .table-sm td {
+            padding: 0.3rem; /* 减少单元格内边距 */
+            vertical-align: middle; /* 垂直居中 */
+        }
+
+        .table-responsive {
+            max-height: 60vh; /* 限制表格最大高度 */
+            overflow-y: auto; /* 使表格内容可滚动 */
+        }
+
+    </style>
+
+</head>
+
+<body id="page-top">
+
+<!-- Page Wrapper -->
+{% include 'navbar.html' %}
+<!-- End of Sidebar -->
+
+<!-- Content Wrapper -->
+<div id="content-wrapper" class="d-flex flex-column">
+
+    <!-- Main Content -->
+    <div id="content">
+
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+            <!-- Sidebar Toggle (Topbar) -->
+            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                <i class="fa fa-bars"></i>
+            </button>
+
+            <!-- Topbar Search -->
+            <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                <div class="input-group">
+                    <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
+                           aria-label="Search" aria-describedby="basic-addon2">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="button">
+                            <i class="fas fa-search fa-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Topbar Navbar -->
+            <ul class="navbar-nav ml-auto">
+
+                <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+                <li class="nav-item dropdown no-arrow d-sm-none">
+                    <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-search fa-fw"></i>
+                    </a>
+                    <!-- Dropdown - Messages -->
+                    <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                         aria-labelledby="searchDropdown">
+                        <form class="form-inline mr-auto w-100 navbar-search">
+                            <div class="input-group">
+                                <input type="text" class="form-control bg-light border-0 small"
+                                       placeholder="Search for..." aria-label="Search"
+                                       aria-describedby="basic-addon2">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="button">
+                                        <i class="fas fa-search fa-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </li>
+
+                <!-- Nav Item - Alerts -->
+                <li class="nav-item dropdown no-arrow mx-1">
+                    <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-bell fa-fw"></i>
+                        <!-- Counter - Alerts -->
+                        <span class="badge badge-danger badge-counter">3+</span>
+                    </a>
+                    <!-- Dropdown - Alerts -->
+                    <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                         aria-labelledby="alertsDropdown">
+                        <h6 class="dropdown-header">
+                            Alerts Center
+                        </h6>
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="mr-3">
+                                <div class="icon-circle bg-primary">
+                                    <i class="fas fa-file-alt text-white"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="small text-gray-500">December 12, 2019</div>
+                                <span class="font-weight-bold">A new monthly report is ready to download!</span>
+                            </div>
+                        </a>
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="mr-3">
+                                <div class="icon-circle bg-success">
+                                    <i class="fas fa-donate text-white"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="small text-gray-500">December 7, 2019</div>
+                                $290.29 has been deposited into your account!
+                            </div>
+                        </a>
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="mr-3">
+                                <div class="icon-circle bg-warning">
+                                    <i class="fas fa-exclamation-triangle text-white"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="small text-gray-500">December 2, 2019</div>
+                                Spending Alert: We've noticed unusually high spending for your account.
+                            </div>
+                        </a>
+                        <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                    </div>
+                </li>
+
+                <!-- Nav Item - Messages -->
+                <li class="nav-item dropdown no-arrow mx-1">
+                    <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-envelope fa-fw"></i>
+                        <!-- Counter - Messages -->
+                        <span class="badge badge-danger badge-counter">7</span>
+                    </a>
+                    <!-- Dropdown - Messages -->
+                    <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                         aria-labelledby="messagesDropdown">
+                        <h6 class="dropdown-header">
+                            Message Center
+                        </h6>
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="dropdown-list-image mr-3">
+                                <img class="rounded-circle" src="https://source.unsplash.com/fn_BT9fwg_E/60x60"
+                                     alt="">
+                                <div class="status-indicator bg-success"></div>
+                            </div>
+                            <div class="font-weight-bold">
+                                <div class="text-truncate">Hi there! I am wondering if you can help me with a
+                                    problem I've been having.
+                                </div>
+                                <div class="small text-gray-500">Emily Fowler · 58m</div>
+                            </div>
+                        </a>
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="dropdown-list-image mr-3">
+                                <img class="rounded-circle" src="https://source.unsplash.com/AU4VPcFN4LE/60x60"
+                                     alt="">
+                                <div class="status-indicator"></div>
+                            </div>
+                            <div>
+                                <div class="text-truncate">I have the photos that you ordered last month, how would
+                                    you like them sent to you?
+                                </div>
+                                <div class="small text-gray-500">Jae Chun · 1d</div>
+                            </div>
+                        </a>
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="dropdown-list-image mr-3">
+                                <img class="rounded-circle" src="https://source.unsplash.com/CS2uCrpNzJY/60x60"
+                                     alt="">
+                                <div class="status-indicator bg-warning"></div>
+                            </div>
+                            <div>
+                                <div class="text-truncate">Last month's report looks great, I am very happy with the
+                                    progress so far, keep up the good work!
+                                </div>
+                                <div class="small text-gray-500">Morgan Alvarez · 2d</div>
+                            </div>
+                        </a>
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="dropdown-list-image mr-3">
+                                <img class="rounded-circle" src="https://source.unsplash.com/Mv9hjnEUHR4/60x60"
+                                     alt="">
+                                <div class="status-indicator bg-success"></div>
+                            </div>
+                            <div>
+                                <div class="text-truncate">Am I a good boy? The reason I ask is because someone told
+                                    me that people say this to all dogs, even if they aren't good...
+                                </div>
+                                <div class="small text-gray-500">Chicken the Dog · 2w</div>
+                            </div>
+                        </a>
+                        <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
+                    </div>
+                </li>
+
+                <div class="topbar-divider d-none d-sm-block"></div>
+
+                <!-- Nav Item - User Information -->
+                <li class="nav-item dropdown no-arrow">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="mr-2 d-none d-lg-inline text-gray-600 small">Valerie Luna</span>
+                        <img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60">
+                    </a>
+                    <!-- Dropdown - User Information -->
+                    <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                         aria-labelledby="userDropdown">
+                        <a class="dropdown-item" href="#">
+                            <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Profile
+                        </a>
+                        <a class="dropdown-item" href="#">
+                            <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Settings
+                        </a>
+                        <a class="dropdown-item" href="#">
+                            <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Activity Log
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Logout
+                        </a>
+                    </div>
+                </li>
+
+            </ul>
+
+        </nav>
+        <!-- End of Topbar -->
+        <div id='calendar-container'>
+            <div id='calendar'></div>
+        </div>
+        <!-- Begin Page Content -->
+
+        <!-- End of Main Content -->
+
+        <!-- Footer -->
+        <footer class="sticky-footer bg-white">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                    <span>Copyright &copy; Your Website 2019</span>
+                </div>
+            </div>
+        </footer>
+        <!-- End of Footer -->
+
+    </div>
+    <!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Logout Modal-->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-primary" href="login.html">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 添加课程表模态框 -->
+<div id="addCourseModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">添加课程表</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                <!-- 课程选择 -->
+                <div class="form-group">
+                    <label for="courseSelect">选择课程</label>
+                    <select class="form-control" id="courseSelect">
+                        {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.name }}</option>
+                        {% endfor %}
+                        <!-- 更多课程 -->
+                    </select>
+                </div>
+                <!-- 班级选择 -->
+                <div class="form-group">
+                    <label for="classSelect">选择班级</label>
+                    <select class="form-control" id="classSelect">
+                        {% for class_name in classes %}
+                            <option value="{{ class_name }}">{{ class_name }}</option>
+                        {% endfor %}
+                        <!-- 更多班级 -->
+                    </select>
+                </div>
+                <!-- 排课方式选择 -->
+                <div class="form-group">
+                    <label for="workSelect">选择排课方式</label>
+                    <select class="form-control" id="workSelect">
+                        <option value="repeated">重复排课</option>
+                        <option value="single">自由排课</option>
+                        <!-- 更多选择 -->
+                    </select>
+                </div>
+                <!-- 老师选择 -->
+                <div class="form-group">
+                    <label for="teacherSelect">选择老师</label>
+                    <select class="form-control" id="teacherSelect">
+                        {% for teacher in teachers %}
+                            <option value="{{ teacher.id }}">{{ teacher.name }}</option>
+                        {% endfor %}
+                        <!-- 更多老师 -->
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="submitBtn">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 管理事件模态框 -->
+<div id="editDeleteModal" class="modal fade custom-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">管理事件</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p><strong>课程：</strong> <span id="modalCourseName">未指定</span></p>
+                <p><strong>班级：</strong> <span id="modalClassName">未指定</span></p>
+                <p><strong>排课方式：</strong> <span id="modalWorkType">未指定</span></p>
+                <p><strong>教师：</strong> <span id="modalTeacherName">未指定</span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="editEventBtn">编辑</button>
+                <button type="button" class="btn btn-success" id="rollCallBtn">点名(签到)</button>
+                <button type="button" class="btn btn-danger" id="deleteEventBtn">删除</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 添加点名模态框 -->
+<!-- 点名模态框 -->
+<div id="rollCallModal" class="modal fade roll-call-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">点名</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <!-- 表格 -->
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>学员</th>
+                        <th><input type="checkbox" id="selectAllPresent"> 到课</th>
+                        <th><input type="checkbox" id="selectAllAbsent"> 旷课</th>
+                        <th><input type="checkbox" id="selectAllLeave"> 请假</th>
+                        <th>消课方式</th>
+                        <th>点名消耗课时</th>
+                        <th>备注</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="rollCallTableBody">
+                    <!-- 示例学生行 -->
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="confirmRollCallBtn">确认点名</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 编辑事件模态框 -->
+<div id="editCourseModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">编辑课程表</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="editCourseSelect">课程</label>
+                        <select class="form-control" id="editCourseSelect">
+                            {% for course in courses %}
+                                <option value="{{ course.name }}">{{ course.name }}</option>
+                            {% endfor %}
+                            <!-- 其他课程选项 -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editClassSelect">班级</label>
+                        <select class="form-control" id="editClassSelect">
+                            {% for class_name in classes %}
+                                <option value="{{ class_name }}">{{ class_name }}</option>
+                            {% endfor %}
+                            <!-- 其他班级选项 -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editWorkSelect">排课方式</label>
+                        <select class="form-control" id="editWorkSelect">
+                            <option value="single">自由排课</option>
+                            <option value="repeated">重复排课</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTeacherSelect">教师</label>
+                        <select class="form-control" id="editTeacherSelect">
+                            {% for teacher in teachers %}
+                                <option value="{{ teacher.name }}">{{ teacher.name }}</option>
+                            {% endfor %}
+                            <!-- 其他教师选项 -->
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="saveEditBtn">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- JavaScript -->
+<script src="{% static 'js/jquery.js' %}"></script>
+<script src="{% static 'js/bootstrap.bundle.js' %}"></script>
+<script src="{% static 'js/index.global.min.js' %}"></script>
+<script src="{% static 'js/zh-cn.global.min.js' %}"></script>
+
+
+<!-- JavaScript -->
+
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        function updateEvent(event) {
+            var csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+            $.ajax({
+                url: '/update_event/',
+                method: 'POST',
+                data: {
+                    id: event.id,
+                    course_id: event.extendedProps.courseId,
+                    class_name: event.extendedProps.className,
+                    work_type: event.extendedProps.workType,
+                    teacher_id: event.extendedProps.teacherId,
+                    start_time: event.start.toISOString(),
+                    end_time: event.end ? event.end.toISOString() : null,
+                    csrfmiddlewaretoken: csrfToken  // 包含CSRF令牌
+                },
+                success: function (response) {
+                    console.log('Event updated successfully:', response);
+                },
+                error: function (error) {
+                    console.error('Error updating event:', error.responseText);
+                }
+            });
+        }
+
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'timeGridWeek',
+            slotMinTime: '06:00',
+            slotMaxTime: '23:00',
+            slotDuration: '01:00:00',
+            editable: true,
+            selectable: true,
+            locale: 'zh-cn',
+            firstDayOfWeek: '1',
+            height: 'auto',
+            scrollTime: '06:00:00',
+            headerToolbar: {
+                left: 'dayGridMonth,timeGridWeek,timeGridDay',
+                center: 'title',
+                right: 'today prev,next'
+            },
+            slotLabelFormat: {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: false
+            },
+            events: '/get_events/', // 从后端获取事件数据
+            eventDrop: function (info) {
+                updateEvent(info.event);
+            },
+            eventResize: function (info) {
+                updateEvent(info.event);
+            },
+            dateClick: function (info) {
+                var startTime = new Date(info.dateStr);
+                var endTime = new Date(startTime.getTime() + (60 * 60 * 1000)); // 默认添加一个小时的事件
+
+                $('#addCourseModal').modal('show');
+
+                $('#submitBtn').off('click').on('click', function () {
+                    var courseId = $('#courseSelect').val();
+                    var className = $('#classSelect').val();
+                    var workType = $('#workSelect').val();
+                    var teacherId = $('#teacherSelect').val();
+
+                    if (courseId && className && teacherId) {
+                        if (workType === '重复排课') {
+                            var currentStartTime = new Date(startTime);
+                            var currentEndTime = new Date(endTime);
+
+                            for (var i = 0; i < 4; i++) {
+                                calendar.addEvent({
+                                    title: $('#courseSelect option:selected').text() + ' - ' + $('#teacherSelect option:selected').text(),
+                                    start: currentStartTime.toISOString(),
+                                    end: currentEndTime.toISOString(),
+                                    allDay: false,
+                                    extendedProps: {
+                                        className: $('#classSelect option:selected').text(),
+                                        workType: workType
+                                    }
+                                });
+
+                                // 将时间调整到下一周
+                                currentStartTime.setDate(currentStartTime.getDate() + 7);
+                                currentEndTime.setDate(currentEndTime.getDate() + 7);
+                            }
+                        } else {
+                            calendar.addEvent({
+                                title: $('#courseSelect option:selected').text() + ' - ' + $('#teacherSelect option:selected').text(),
+                                start: startTime.toISOString(),
+                                end: endTime.toISOString(),
+                                allDay: false,
+                                extendedProps: {
+                                    className: $('#classSelect option:selected').text(),
+                                    workType: workType
+                                }
+                            });
+                        }
+
+                        // 获取 CSRF 令牌
+                        var csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+                        $.ajax({
+                            url: '/save_event/',
+                            method: 'POST',
+                            data: {
+                                course: courseId,
+                                class_name: className,
+                                work_type: workType,
+                                teacher: teacherId,
+                                start_time: startTime.toISOString(),
+                                end_time: endTime.toISOString(),
+                                csrfmiddlewaretoken: csrfToken  // 包含CSRF令牌
+                            },
+                            success: function (response) {
+                                console.log('Event saved successfully');
+                                location.reload(); // 添加事件后刷新页面
+                            },
+                            error: function (error) {
+                                console.error('Error saving event:', error.responseText);
+                            }
+                        });
+
+                        $('#addCourseModal').modal('hide');
+                    }
+                });
+            },
+            eventClick: function (info) {
+                $.ajax({
+                    url: '/get_event/' + info.event.id + '/',
+                    method: 'GET',
+                    success: function (data) {
+                        // 映射排课方式
+                        var workTypeMap = {
+                            'single': '自由排课',
+                            'repeated': '重复排课'
+                        };
+
+                        // 填充管理事件模态框中的事件信息
+                        $('#modalCourseName').text(data.title.split(' - ')[0]);
+                        $('#modalClassName').text(data.extendedProps.className);
+                        $('#modalWorkType').text(workTypeMap[data.extendedProps.workType] || '未指定');
+                        $('#modalTeacherName').text(data.title.split(' - ')[1]);
+
+                        $('#editDeleteModal').modal('show');
+
+                        // 编辑事件
+                        $('#editEventBtn').off('click').on('click', function () {
+                            // 将管理事件模态框中的数据复制到编辑模态框中
+                            var courseName = data.title.split(' - ')[0];
+                            var className = data.extendedProps.className || '';
+                            var workType = data.extendedProps.workType || 'single';
+                            var teacherName = data.title.split(' - ')[1] || '';
+
+                            // 动态生成选项并设置选中值
+                            $('#editCourseSelect').val(courseName);
+                            $('#editClassSelect').val(className);
+                            $('#editWorkSelect').val(workType);
+                            $('#editTeacherSelect').val(teacherName);
+
+                            $('#editDeleteModal').modal('hide');
+                            $('#editCourseModal').modal('show');
+
+                            $('#saveEditBtn').off('click').on('click', function () {
+                                var newCourseName = $('#editCourseSelect').val();
+                                var newClassName = $('#editClassSelect').val();
+                                var newWorkType = $('#editWorkSelect').val();
+                                var newTeacherName = $('#editTeacherSelect').val();
+
+                                if (newCourseName && newClassName && newTeacherName) {
+                                    info.event.setProp('title', newCourseName + ' - ' + newTeacherName);
+                                    info.event.setExtendedProp('className', newClassName);
+                                    info.event.setExtendedProp('workType', newWorkType);
+
+                                    // 获取 CSRF 令牌
+                                    var csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+                                    $.ajax({
+                                        url: '/update_event/',
+                                        method: 'POST',
+                                        data: {
+                                            id: info.event.id,
+                                            course: newCourseName,
+                                            class_name: newClassName,
+                                            work_type: newWorkType,
+                                            teacher: newTeacherName,
+                                            start_time: info.event.start.toISOString(),
+                                            end_time: info.event.end.toISOString(),
+                                            csrfmiddlewaretoken: csrfToken  // 包含CSRF令牌
+                                        },
+                                        success: function (response) {
+                                            console.log('Event updated successfully');
+                                        },
+                                        error: function (error) {
+                                            console.error('Error updating event:', error.responseText);
+                                        }
+                                    });
+
+                                    $('#editCourseModal').modal('hide');
+                                }
+                            });
+                        });
+
+                        // 删除事件
+                        $('#deleteEventBtn').off('click').on('click', function () {
+                            var eventId = info.event.id;
+
+                            // 获取 CSRF 令牌
+                            var csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+                            $.ajax({
+                                url: '/delete_event/',
+                                method: 'POST',
+                                data: {
+                                    id: eventId,
+                                    csrfmiddlewaretoken: csrfToken  // 包含CSRF令牌
+                                },
+                                success: function (response) {
+                                    if (response.status === 'success') {
+                                        info.event.remove();  // 从日历中移除事件
+                                        $('#editDeleteModal').modal('hide');
+                                    } else {
+                                        console.error('Error deleting event:', response.message);
+                                    }
+                                },
+                                error: function (error) {
+                                    console.error('Error deleting event:', error.responseText);
+                                }
+                            });
+                        });
+
+                        // 点击点名按钮的逻辑
+                        $('#rollCallBtn').off('click').on('click', function () {
+                            $('#editDeleteModal').modal('hide'); // 关闭当前的管理模态框
+                            $('#rollCallModal').modal('show');   // 显示点名模态框
+
+                            var courseName = $('#modalCourseName').text();
+                            var eventId = info.event.id; // 获取事件ID
+
+                            // 获取特定课程的学生列表
+                            $.ajax({
+                                url: '/get_students_by_course/', // 服务器端获取学生列表的URL
+                                method: 'GET',
+                                data: {
+                                    course_name: courseName
+                                },
+                                success: function (response) {
+                                    var students = response.students;
+                                    var tableBody = $('#rollCallTableBody');
+                                    tableBody.empty(); // 清空表格内容
+
+                                    // 动态生成学生列表
+                                    students.forEach(function (student) {
+                                        var row = `
+                                        <tr>
+                                            <td>${student.name}</td>
+                                            <td><input type="radio" name="attendanceStatus_${student.id}" value="到课"></td>
+                                            <td><input type="radio" name="attendanceStatus_${student.id}" value="旷课"></td>
+                                            <td><input type="radio" name="attendanceStatus_${student.id}" value="请假"></td>
+                                            <td><input type="text" value="按课时" disabled></td>
+                                            <td><input type="number" value="1" min="1" class="form-control"></td>
+                                            <td><input type="text" class="form-control"></td>
+                                            <td>
+                                                <button class="btn btn-danger btn-sm remove-student-btn">移除</button>
+                                            </td>
+                                        </tr>
+                                    `;
+                                        tableBody.append(row);
+                                    });
+
+                                    // 全选框逻辑
+                                    $('#selectAllPresent').off('change').on('change', function () {
+                                        var isChecked = $(this).is(':checked');
+                                        $('input[type="radio"][value="到课"]').prop('checked', isChecked);
+                                        if (isChecked) {
+                                            $('#selectAllAbsent').prop('checked', false);
+                                            $('#selectAllLeave').prop('checked', false);
+                                        }
+                                    });
+
+                                    $('#selectAllAbsent').off('change').on('change', function () {
+                                        var isChecked = $(this).is(':checked');
+                                        $('input[type="radio"][value="旷课"]').prop('checked', isChecked);
+                                        if (isChecked) {
+                                            $('#selectAllPresent').prop('checked', false);
+                                            $('#selectAllLeave').prop('checked', false);
+                                        }
+                                    });
+
+                                    $('#selectAllLeave').off('change').on('change', function () {
+                                        var isChecked = $(this).is(':checked');
+                                        $('input[type="radio"][value="请假"]').prop('checked', isChecked);
+                                        if (isChecked) {
+                                            $('#selectAllPresent').prop('checked', false);
+                                            $('#selectAllAbsent').prop('checked', false);
+                                        }
+                                    });
+
+                                    // 移除按钮逻辑
+                                    $('.remove-student-btn').off('click').on('click', function () {
+                                        $(this).closest('tr').remove();
+                                    });
+                                },
+                                error: function (error) {
+                                    console.error('Error fetching student data:', error.responseText);
+                                }
+                            });
+
+                            // 绑定确认点名按钮的点击事件
+                            $('#confirmRollCallBtn').off('click').on('click', function () {
+                                var attendanceData = [];
+                                var hasValidSelection = false; // 初始化变量
+
+                                $('#rollCallTableBody tr').each(function () {
+                                    var studentId = $(this).find('input[type="radio"]').attr('name').split('_')[1];
+                                    var attendanceStatus = $(this).find('input[type="radio"]:checked').val();
+                                    var consumedHours = $(this).find('input[type="number"]').val();
+
+                                    if (attendanceStatus === '到课') {
+                                        attendanceData.push({
+                                            student_id: studentId,
+                                            consumed_hours: consumedHours
+                                        });
+                                        hasValidSelection = true;
+                                    } else if (attendanceStatus === '旷课' || attendanceStatus === '请假') {
+                                        hasValidSelection = true;
+                                    }
+                                });
+
+                                if (!hasValidSelection) {
+                                    alert('请至少选择到课或旷课或者请假的选项');
+                                    return;
+                                }
+
+                                // 发送 AJAX 请求更新学生的课时信息
+                                $.ajax({
+                                    url: '/update_student_hours/',
+                                    method: 'POST',
+                                    data: {
+                                        attendance_data: JSON.stringify(attendanceData),
+                                        csrfmiddlewaretoken: document.querySelector('input[name="csrfmiddlewaretoken"]').value
+                                    },
+                                    success: function (response) {
+                                        console.log('Student hours updated successfully:', response);
+                                        $('#rollCallModal').modal('hide');
+                                        // 显示提交成功的消息
+                                        alert('提交成功');
+
+                                        // 发送 AJAX 请求更新事件颜色
+                                        $.ajax({
+                                            url: '/mark_attendance/' + eventId + '/',
+                                            method: 'POST',
+                                            data: {
+                                                csrfmiddlewaretoken: document.querySelector('input[name="csrfmiddlewaretoken"]').value
+                                            },
+                                            success: function (response) {
+                                                if (response.status === 'success') {
+                                                    info.event.setProp('color', '#FFC0CB'); // 更新事件颜色为粉色
+
+                                                } else {
+                                                    console.error('Error marking attendance:', response.message);
+                                                }
+                                            },
+                                            error: function (error) {
+                                                console.error('Error marking attendance:', error.responseText);
+                                            }
+                                        });
+                                    },
+                                    error: function (error) {
+                                        console.error('Error updating student hours:', error.responseText);
+                                        // 显示提交失败的消息
+                                        alert('提交失败，请检查课程是否有不含课时的学生');
+                                    }
+                                });
+                            });
+                        });
+                    },
+                    error: function (error) {
+                        console.error('Error fetching event data:', error.responseText);
+                    }
+                });
+            }
+        });
+
+        calendar.render();
+    });
+
+
+</script>
+
+
+<script>
+    setTimeout(function () {
+        document.querySelectorAll('.fc-timegrid-slot').forEach(function (slot) {
+            slot.style.height = '10px'; // 调整为你希望的高度
+            slot.style.lineHeight = '60px'; // 保持文本垂直居中
+        });
+    }, 0);
+</script>
+</div>
+</body>
+</html>

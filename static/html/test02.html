@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程表</title>
+    <link href=/static/html/startbootstrap-sb-admin-2-gh-pages/css/bootstrap.min.css/>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #calendar-container {
+            width: 80%;
+            margin: 50px auto;
+        }
+
+        .fc-timegrid-slot {
+            height: 60px; /* 调整为你希望的高度 */
+            line-height: 60px; /* 保持文本垂直居中 */
+        }
+    </style>
+</head>
+<body>
+<div id='calendar-container'>
+    <div id='calendar'></div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek', // 显示为每周视图
+                slotMinTime: '06:00',
+                slotMaxTime: '23:00',
+                slotDuration: '01:00:00',
+                editable: true,  // 允许拖拽和调整时间
+                selectable: true,  // 允许选中日期或时间
+                selectMirror: true,
+                locale: 'zh-cn',
+                firstDayOfWeek: '1',
+                height: 'auto',
+            scrollTime: '06:00:00',
+
+                headerToolbar: {
+                    left: 'dayGridMonth,timeGridWeek,timeGridDay',
+                    center:
+                        'title',
+                    right:
+                        'today prev,next'  // 支持月、周、日视图切换
+                }
+                ,
+                slotLabelFormat: {
+                    hour: 'numeric',
+                    minute:
+                        '2-digit',
+                    hour12:
+                        false
+                }
+                ,
+
+
+                select: function (info) {
+                    var title = prompt('请输入课程名称:');
+                    var teacher = prompt('请输入老师名字:');
+                    if (title) {
+                        calendar.addEvent({
+                            title: title + ' - ' + teacher,
+                            start: info.startStr,
+                            end: info.endStr,
+                            allDay: info.allDay
+                        });
+                    }
+                    calendar.unselect();
+                }
+                ,
+                events: [
+                    {
+                        title: '书法初级班',
+                        start: '2024-08-19T07:00:00',
+                        end: '2024-08-19T08:00:00',
+                        description: '康园园'
+                    },
+                    {
+                        title: '蓝鲸美术课',
+                        start: '2024-08-20T07:00:00',
+                        end: '2024-08-20T08:00:00',
+                        description: '李老师测试'
+                    }
+                ]
+
+
+            })
+        ;
+        calendar.render();
+    });
+
+
+     setTimeout(function () {
+                document.querySelectorAll('.fc-timegrid-slot').forEach(function (slot) {
+                    slot.style.height = '100px'; // 调整为你希望的高度
+                    slot.style.lineHeight = '60px'; // 保持文本垂直居中
+                });
+
+        });
+</script>
+<script>
+
+    $('#calendar').fullCalendar({
+        height: auto
+    });
+
+
+
+</script>
+<script src="startbootstrap-sb-admin-2-gh-pages/js/index.global.min.js"></script>
+<script src="startbootstrap-sb-admin-2-gh-pages/js/zh-cn.global.min.js"></script>
+</body>
+</html>

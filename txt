@@ -1,0 +1,101 @@
+初始化datatables的代码
+这是原来的代码，出了问题还可以还原
+/ Call the dataTables jQuery plugin
+$(document).ready(function() {
+  $('#dataTable').DataTable();
+});
+
+
+结合WebSocket和数据库触发器可是花
+
+
+
+
+通过结合 DataTables 和 PapaParse 等工具，可以轻松实现表格数据的导入和导出功能。
+导出功能可以通过 DataTables 的 Buttons Extension 来实现，导入功能则可以通过 PapaParse 库处理 CSV 文件，并动态更新表格内容。
+
+新增按钮
+<button  type="button" class="btn btn-primary btn-success" style="float: right">
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+ class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"></path>
+ </svg>
+    新增员工
+    <a href="#"></a>
+  </button>
+
+鼠标移动
+.table tbody tr {
+            transition: background-color 0.3s;
+        }
+
+        .table tbody tr:hover {
+            background-color: #ece6e6;
+        }
+
+
+
+
+ select: function (info) {
+                    var title = prompt('请输入课程名称:');
+                    var teacher = prompt('请输入老师名字:');
+                    if (title) {
+                        calendar.addEvent({
+                            title: title + ' - ' + teacher,
+                            start: info.startStr,
+                            end: info.endStr,
+                            allDay: info.allDay
+                        });
+                    }
+                    calendar.unselect();
+                }
+                ,
+
+
+
+
+
+                 events: [
+                    {
+                        title: '书法初级班',
+                        start: '2024-08-19T07:00:00',
+                        end: '2024-08-19T08:00:00',
+                        description: '康园园'
+                    },
+                    {
+                        title: '蓝鲸美术课',
+                        start: '2024-08-20T07:00:00',
+                        end: '2024-08-20T08:00:00',
+                        description: '李老师测试'
+                    }
+                ]
+
+必填字段加*号
+<span class="text-danger">*</span>
+<label for="name" class="form-label">姓名<span class="text-danger">*</span></label>
+
+
+
+
+
+
+
+
+删除
+    if request.method == 'POST':
+        department_instance = get_object_or_404(department, id=id)  # 使用全小写的名称
+        department_instance.delete()
+        return redirect('departinfo')  # 替换为你实际的重定向 URL
+
+编辑
+  department_instance = get_object_or_404(department, id=id)
+
+    if request.method == 'POST':
+        form = DepartmentForm(request.POST, instance=department_instance)
+        if form.is_valid():
+            form.save()
+            return redirect('departinfo')  # 替换为实际的重定向 URL
+    else:
+        form = DepartmentForm(instance=department_instance)
+
+    return render(request, '部门信息.html', {'form': form, 'department': department_instance})

@@ -1,0 +1,618 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>页面首页</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="{% static 'css/all.css' %}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+          rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="{% static 'css/sb-admin-2.css' %}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-row {
+            margin-bottom: 15px;
+        }
+
+        .btn-submit {
+            margin-top: 20px;
+        }
+
+        .form-select {
+            background-color: #ffffff;
+            background-image: none;
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .form-control, .form-select {
+            border-radius: 0.375rem;
+            border: 1px solid #ced4da;
+            height: calc(2.5rem + 2px); /* Ensures consistent height */
+            box-shadow: none; /* Remove default shadow */
+        }
+
+        .form-select {
+            background-color: #ffffff;
+            background-image: none;
+        }
+
+        .btn-close svg {
+            width: 20px;
+            height: 20px;
+            fill: black; /* 可以根据需要修改颜色 */
+        }
+
+        #customAlert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1055;
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+
+            .text-danger {
+                color: red; /* 可以替换为你想要的颜色 */
+                font-weight: bold;
+            }
+
+        }
+
+
+    </style>
+
+</head>
+
+<body id="page-top">
+
+<!-- Page Wrapper -->
+{% include 'navbar.html' %}
+<!-- End of Sidebar -->
+
+<!-- Content Wrapper -->
+<div id="content-wrapper" class="d-flex flex-column">
+
+    <!-- Main Content -->
+    <div id="content">
+
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+            <!-- Sidebar Toggle (Topbar) -->
+            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                <i class="fa fa-bars"></i>
+            </button>
+
+            <!-- Topbar Search -->
+            <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                <div class="input-group">
+                    <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
+                           aria-label="Search" aria-describedby="basic-addon2">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="button">
+                            <i class="fas fa-search fa-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Topbar Navbar -->
+            <ul class="navbar-nav ml-auto">
+
+                <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+                <li class="nav-item dropdown no-arrow d-sm-none">
+                    <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-search fa-fw"></i>
+                    </a>
+                    <!-- Dropdown - Messages -->
+                    <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                         aria-labelledby="searchDropdown">
+                        <form class="form-inline mr-auto w-100 navbar-search">
+                            <div class="input-group">
+                                <input type="text" class="form-control bg-light border-0 small"
+                                       placeholder="Search for..." aria-label="Search"
+                                       aria-describedby="basic-addon2">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="button">
+                                        <i class="fas fa-search fa-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </li>
+
+                <!-- Nav Item - Alerts -->
+                <li class="nav-item dropdown no-arrow mx-1">
+                    <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-bell fa-fw"></i>
+                        <!-- Counter - Alerts -->
+                        <span class="badge badge-danger badge-counter">3+</span>
+                    </a>
+                    <!-- Dropdown - Alerts -->
+                    <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                         aria-labelledby="alertsDropdown">
+                        <h6 class="dropdown-header">
+                            Alerts Center
+                        </h6>
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="mr-3">
+                                <div class="icon-circle bg-primary">
+                                    <i class="fas fa-file-alt text-white"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="small text-gray-500">December 12, 2019</div>
+                                <span class="font-weight-bold">A new monthly report is ready to download!</span>
+                            </div>
+                        </a>
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="mr-3">
+                                <div class="icon-circle bg-success">
+                                    <i class="fas fa-donate text-white"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="small text-gray-500">December 7, 2019</div>
+                                $290.29 has been deposited into your account!
+                            </div>
+                        </a>
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="mr-3">
+                                <div class="icon-circle bg-warning">
+                                    <i class="fas fa-exclamation-triangle text-white"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="small text-gray-500">December 2, 2019</div>
+                                Spending Alert: We've noticed unusually high spending for your account.
+                            </div>
+                        </a>
+                        <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                    </div>
+                </li>
+
+                <!-- Nav Item - Messages -->
+                <li class="nav-item dropdown no-arrow mx-1">
+                    <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-envelope fa-fw"></i>
+                        <!-- Counter - Messages -->
+                        <span class="badge badge-danger badge-counter">7</span>
+                    </a>
+                    <!-- Dropdown - Messages -->
+                    <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                         aria-labelledby="messagesDropdown">
+                        <h6 class="dropdown-header">
+                            Message Center
+                        </h6>
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="dropdown-list-image mr-3">
+                                <img class="rounded-circle" src="https://source.unsplash.com/fn_BT9fwg_E/60x60"
+                                     alt="">
+                                <div class="status-indicator bg-success"></div>
+                            </div>
+                            <div class="font-weight-bold">
+                                <div class="text-truncate">Hi there! I am wondering if you can help me with a
+                                    problem I've been having.
+                                </div>
+                                <div class="small text-gray-500">Emily Fowler · 58m</div>
+                            </div>
+                        </a>
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="dropdown-list-image mr-3">
+                                <img class="rounded-circle" src="https://source.unsplash.com/AU4VPcFN4LE/60x60"
+                                     alt="">
+                                <div class="status-indicator"></div>
+                            </div>
+                            <div>
+                                <div class="text-truncate">I have the photos that you ordered last month, how would
+                                    you like them sent to you?
+                                </div>
+                                <div class="small text-gray-500">Jae Chun · 1d</div>
+                            </div>
+                        </a>
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="dropdown-list-image mr-3">
+                                <img class="rounded-circle" src="https://source.unsplash.com/CS2uCrpNzJY/60x60"
+                                     alt="">
+                                <div class="status-indicator bg-warning"></div>
+                            </div>
+                            <div>
+                                <div class="text-truncate">Last month's report looks great, I am very happy with the
+                                    progress so far, keep up the good work!
+                                </div>
+                                <div class="small text-gray-500">Morgan Alvarez · 2d</div>
+                            </div>
+                        </a>
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="dropdown-list-image mr-3">
+                                <img class="rounded-circle" src="https://source.unsplash.com/Mv9hjnEUHR4/60x60"
+                                     alt="">
+                                <div class="status-indicator bg-success"></div>
+                            </div>
+                            <div>
+                                <div class="text-truncate">Am I a good boy? The reason I ask is because someone told
+                                    me that people say this to all dogs, even if they aren't good...
+                                </div>
+                                <div class="small text-gray-500">Chicken the Dog · 2w</div>
+                            </div>
+                        </a>
+                        <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
+                    </div>
+                </li>
+
+                <div class="topbar-divider d-none d-sm-block"></div>
+
+                <!-- Nav Item - User Information -->
+                <li class="nav-item dropdown no-arrow">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="mr-2 d-none d-lg-inline text-gray-600 small">Valerie Luna</span>
+                        <img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60">
+                    </a>
+                    <!-- Dropdown - User Information -->
+                    <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                         aria-labelledby="userDropdown">
+                        <a class="dropdown-item" href="#">
+                            <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Profile
+                        </a>
+                        <a class="dropdown-item" href="#">
+                            <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Settings
+                        </a>
+                        <a class="dropdown-item" href="#">
+                            <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Activity Log
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Logout
+                        </a>
+                    </div>
+                </li>
+
+            </ul>
+
+        </nav>
+        <!-- End of Topbar -->
+        <!-- add_student.html -->
+        <div class="container-fluid">
+            <div class="container">
+                <div class="form-container">
+                    <h1 class="h3 mb-4 text-gray-800">添加学生报名</h1>
+                    <form method="post" action="{% url 'add_student' %}">
+                        {% csrf_token %}
+
+                        <div class="row form-row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">姓名<span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="name" name="name"
+                                           value="{{ student_form.name.value }}" placeholder="请输入姓名" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="age" class="form-label">年龄</label>
+                                    <input type="number" class="form-control" id="age" name="age"
+                                           value="{{ student_form.age.value }}" placeholder="请输入年龄">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row form-row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="study" class="form-label">授课方式<span
+                                            class="text-danger">*</span></label>
+                                    <select id="study" name="enrollment_type" class="form-control" required>
+                                        <option value=""
+                                                {% if student_form.enrollment_type.value == "" %}selected{% endif %}>请选择
+                                        </option>
+                                        <option value="hours"
+                                                {% if student_form.enrollment_type.value == "hours" %}selected{% endif %}>
+                                            课时
+                                        </option>
+                                        <option value="days"
+                                                {% if student_form.enrollment_type.value == "days" %}selected{% endif %}>
+                                            天数
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">家庭住址</label>
+                                    <input type="text" class="form-control" id="address" name="address"
+                                           value="{{ student_form.address.value }}" placeholder="请输入家庭住址">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 动态显示部分 -->
+                        <div id="hourFields" class="row form-row d-none">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="duration" class="form-label">时长（小时）</label>
+                                    <input type="number" class="form-control" id="duration" name="course_hours"
+                                           value="{{ hours_form.course_hours.value }}" placeholder="请输入时长">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="price" class="form-label">课单价（元）</label>
+                                    <input type="number" class="form-control" id="price" name="price_per_hour"
+                                           value="{{ hours_form.price_per_hour.value }}" placeholder="请输入课单价">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="timeFields" class="row form-row d-none">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="start_time" class="form-label">开始时间</label>
+                                    <input type="date" class="form-control" id="start_time" name="start_date"
+                                           value="{{ days_form.start_date.value }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="end_time" class="form-label">结束时间</label>
+                                    <input type="date" class="form-control" id="end_time" name="end_date"
+                                           value="{{ days_form.end_date.value }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row form-row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="tuition" class="form-label">学费<span
+                                            class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="tuition" name="fee"
+                                           value="{{ student_form.fee.value }}" placeholder="请输入学费" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="course" class="form-label">所学课程<span
+                                            class="text-danger">*</span></label>
+                                    <select id="course" name="course" class="form-control" required>
+                                        <option value="" {% if not student_form.course.value %}selected{% endif %}>
+                                            请选择课程
+                                        </option>
+                                        {% for course in courses %}
+                                            <option value="{{ course.id }}"
+                                                    {% if student_form.course.value == course.id %}selected{% endif %}>
+                                                {{ course.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="row form-row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="parent_contact" class="form-label">家长联系方式</label>
+                                    <input type="text" class="form-control" id="parent_contact" name="parent_contact"
+                                           value="{{ student_form.parent_contact.value }}" placeholder="请输入电话">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="gender" class="form-label">选择性别</label>
+                                    <select class="form-control" id="gender" name="gender">
+                                        <option value="" {% if student_form.gender.value == "" %}selected{% endif %}>
+                                            请选择性别
+                                        </option>
+                                        <option value="M" {% if student_form.gender.value == "M" %}selected{% endif %}>
+                                            男
+                                        </option>
+                                        <option value="F" {% if student_form.gender.value == "F" %}selected{% endif %}>
+                                            女
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row form-row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="admission_teacher" class="form-label">招生老师</label>
+                                    <input type="text" class="form-control" id="admission_teacher"
+                                           name="Admissionsteacher" value="{{ student_form.Admissionsteacher.value }}"
+                                           placeholder="请输入招生老师">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-submit">提交</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Order Complete Modal -->
+        <div class="modal fade" id="orderCompleteModal" tabindex="-1" aria-labelledby="orderCompleteModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="orderCompleteModalLabel">订单完成</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="关闭"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>提交成功！订单已完成。</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmationModalLabel">确认提交</h5>
+                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="关闭"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>请确认以下信息是否正确，并且选择支付方式，然后点击提交。</p>
+                        <p><strong>学费金额：</strong><span id="tuitionAmount"></span> 元</p>
+                        <p><strong>姓名：</strong><span id="tuitionAmount"></span> 元</p>
+                        <div class="mb-3">
+                            <label for="paymentMethod" class="form-label">选择支付方式</label>
+                            <select id="paymentMethod" class="form-select">
+                                <option value="alipay">支付宝</option>
+                                <option value="wechat">微信</option>
+                                <option value="bank">银行卡</option>
+                                <option value="creditcard">信用卡</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="finalSubmit">提交</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="sticky-footer bg-white">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                    <span>Copyright &copy; Your Website 2019</span>
+                </div>
+            </div>
+        </footer>
+        <!-- End of Footer -->
+
+    </div>
+    <!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Logout Modal-->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">x</span>
+                </button>
+            </div>
+            <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-primary" href="login.html">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="customAlert" class="alert alert-warning alert-dismissible fade show d-none" role="alert">
+    <strong>警告！</strong> 请填写所有必填字段。
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="关闭"></button>
+</div>
+
+
+
+
+
+<!-- Bootstrap core JavaScript-->
+<script src="{% static 'js/jquery.js' %}"></script>
+<script src="{% static 'js/bootstrap.bundle.js' %}"></script>
+<script src="{% static 'js/jquery.easing.js' %}"></script>
+<script src="{% static 'js/sb-admin-2.js' %}"></script>
+<script>
+    document.getElementById('study').addEventListener('change', function () {
+        var enrollmentType = this.value;
+        if (enrollmentType === 'hours') {
+            document.getElementById('hourFields').classList.remove('d-none');
+            document.getElementById('timeFields').classList.add('d-none');
+        } else if (enrollmentType === 'days') {
+            document.getElementById('timeFields').classList.remove('d-none');
+            document.getElementById('hourFields').classList.add('d-none');
+        } else {
+            document.getElementById('hourFields').classList.add('d-none');
+            document.getElementById('timeFields').classList.add('d-none');
+        }
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+    // 获取存储在localStorage中的信息
+    const studentName = localStorage.getItem('studentName');
+    const parentContact = localStorage.getItem('parentContact');
+    const intendedCourse = localStorage.getItem('intendedCourse');
+    const enrollmentTeacher = localStorage.getItem('enrollmentTeacher');
+
+    // 填充表单字段
+    if (studentName) {
+        document.getElementById('name').value = studentName;
+    }
+    if (parentContact) {
+        document.getElementById('parent_contact').value = parentContact;
+    }
+    if (intendedCourse) {
+        document.getElementById('course').value = intendedCourse;
+    }
+    if (enrollmentTeacher) {
+        document.getElementById('admission_teacher').value = enrollmentTeacher;
+    }
+
+    // 清除localStorage中的信息
+    localStorage.removeItem('studentName');
+    localStorage.removeItem('parentContact');
+    localStorage.removeItem('intendedCourse');
+    localStorage.removeItem('enrollmentTeacher');
+});
+
+</script>
+
+</body>
+
+</html>

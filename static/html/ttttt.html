@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>新增用户功能</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+  <style>
+    .container {
+      margin-top: 20px;
+    }
+    .modal-dialog {
+      max-width: 600px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="h3 mb-2 text-gray-800">用户管理</h1>
+    <p class="mb-4">使用下面的按钮添加新用户。</p>
+
+    <!-- 新增用户按钮 -->
+    <button id="addUserButton" class="btn btn-primary mb-3" data-toggle="modal" data-target="#addUserModal">新增用户</button>
+
+    <!-- 用户数据表 -->
+    <div class="table-responsive">
+      <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+        <thead>
+          <tr>
+            <th>姓名</th>
+            <th>年龄</th>
+            <th>所属学习</th>
+            <th>家庭住址</th>
+            <th>所学课程</th>
+            <th>入学时间</th>
+            <th>学费</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 表格数据将在这里添加 -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 新增用户模态框 -->
+  <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addUserModalLabel">新增用户</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="addUserForm">
+            <div class="form-group">
+              <label for="name">姓名</label>
+              <input type="text" class="form-control" id="name" required>
+            </div>
+            <div class="form-group">
+              <label for="age">年龄</label>
+              <input type="number" class="form-control" id="age" required>
+            </div>
+            <div class="form-group">
+              <label for="study">所属学习</label>
+              <input type="text" class="form-control" id="study" required>
+            </div>
+            <div class="form-group">
+              <label for="address">家庭住址</label>
+              <input type="text" class="form-control" id="address" required>
+            </div>
+            <div class="form-group">
+              <label for="courses">所学课程</label>
+              <input type="text" class="form-control" id="courses" required>
+            </div>
+            <div class="form-group">
+              <label for="enrollmentDate">入学时间</label>
+              <input type="date" class="form-control" id="enrollmentDate" required>
+            </div>
+            <div class="form-group">
+              <label for="tuition">学费</label>
+              <input type="number" class="form-control" id="tuition" required>
+            </div>
+            <button type="submit" class="btn btn-primary">保存</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      $('#dataTable').DataTable();
+
+      // 表单提交事件
+      $('#addUserForm').on('submit', function(event) {
+        event.preventDefault(); // 阻止表单的默认提交行为
+
+        // 获取表单数据
+        var name = $('#name').val();
+        var age = $('#age').val();
+        var study = $('#study').val();
+        var address = $('#address').val();
+        var courses = $('#courses').val();
+        var enrollmentDate = $('#enrollmentDate').val();
+        var tuition = $('#tuition').val();
+
+        // 将数据添加到表格
+        $('#dataTable').DataTable().row.add([
+          name,
+          age,
+          study,
+          address,
+          courses,
+          enrollmentDate,
+          tuition
+        ]).draw();
+
+        // 关闭模态框
+        $('#addUserModal').modal('hide');
+
+        // 清空表单
+        $('#addUserForm')[0].reset();
+      });
+    });
+  </script>
+</body>
+</html>

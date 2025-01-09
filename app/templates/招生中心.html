@@ -1,0 +1,743 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>课程表</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="{% static 'css/all.css' %}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+          rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'css/sb-admin-2.css' %}" rel="stylesheet">
+
+    <link href="{% static 'css/datatables.css' %}" rel="stylesheet">
+    <style>
+        .student-checkbox {
+            margin-left: -1px; /* 向右移动2px */
+        }
+
+        #studentsTable {
+            table-layout: fixed; /* 固定表格布局 */
+            width: 100%; /* 使表格宽度100% */
+            white-space: nowrap; /* 不换行 */
+        }
+
+        #studentsTable td {
+
+            text-overflow: ellipsis; /* 使用省略号表示溢出文本 */
+            white-space: nowrap; /* 不换行 */
+
+        }
+
+    </style>
+
+</head>
+
+<body id="page-top">
+
+<!-- Page Wrapper -->
+{% include 'navbar.html' %}
+<!-- End of Sidebar -->
+<div class="container-fluid mt-2">
+
+    <div class=" d-flex justify-content-between mb-3">
+        <div class="d-flex">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">创建</button>
+            <button id="createEnrollmentButton" class="btn btn-success ms-3" data-bs-toggle="modal"
+                    data-bs-target="#enrollModal" data-id="{{ enrollment.id }}">安排报名
+            </button>
+        </div>
+        <button class="btn btn-danger " data-bs-toggle="modal" data-bs-target="#deleteModal" id="deleteSelected">删除
+        </button>
+
+    </div>
+    <div class="table-container">
+        <table id="studentsTable" class="table table-striped">
+            <thead>
+            <tr>
+                <th style="width: 40px;">
+                    <input type="checkbox" id="selectAll">
+                </th>
+                <th>姓名</th>
+                <th>联系方式</th>
+                <th>意向课程</th>
+                <th>渠道来源</th>
+                <th>招生老师</th>
+                <th>跟进状态</th>
+                <th>最近跟进时间</th>
+                <th>下一次跟进时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody style="margin: 0 auto">
+            {% for enrollment in enrollments %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <input type="checkbox" class="student-checkbox form-check-input"
+                                   value="{{ enrollment.id }}">
+                            <span></span>
+                        </div>
+                    </td>
+                    <td>{{ enrollment.name }}</td>
+                    <td>{{ enrollment.phone }}</td>
+                    <td>{{ enrollment.intended_course.name }}</td>
+                    <td>{{ enrollment.source_channel }}</td>
+                    <td>{{ enrollment.enrollment_teacher.name }}</td>
+                    <td>
+                        <select class="form-select" data-id="{{ enrollment.id }}">
+                            <option {% if enrollment.follow_up_status == '失效' %}selected{% endif %}>失效</option>
+                            <option {% if enrollment.follow_up_status == '跟进中' %}selected{% endif %}>跟进中</option>
+                            <option {% if enrollment.follow_up_status == '待跟进' %}selected{% endif %}>待跟进</option>
+                            <option {% if enrollment.follow_up_status == '已签约' %}selected{% endif %}>已签约</option>
+                            <option {% if enrollment.follow_up_status == '已邀约' %}selected{% endif %}>已邀约</option>
+                        </select>
+                    </td>
+                    <td>{{ enrollment.last_follow_up_time |date:"Y/m/d H:i" }}</td>
+                    <td>{{ enrollment.next_follow_up_time |date:"Y/m/d H:i" }}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editEnrollment({{ enrollment.id }})">编辑
+                        </button>
+                        <button class="btn btn-warning btn-sm" onclick="addFollowUp({{ enrollment.id }})">添加跟进
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Content Wrapper -->
+<!-- 创建模态框 -->
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#0a5cb8;">
+                <h5 class="modal-title" id="createModalLabel" style="color: #dee2e6">添加学员</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createForm">
+                    <div class="mb-3">
+                        <label for="fieldName" class="form-label">姓名</label>
+                        <input type="text" class="form-control" id="fieldName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fieldPhone" class="form-label">联系方式</label>
+                        <input type="number" class="form-control" id="fieldPhone" name="phone" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fieldChannel" class="form-label">渠道</label>
+                        <input type="text" class="form-control" id="fieldChannel" name="source_channel" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editFieldTeacher" class="form-label">招生老师</label>
+                        <select class="form-select" id="createFieldTeacher" name="enrollment_teacher" required>
+                            <option value=""></option>
+                            {% for employee in employees %}
+                                <option value="{{ employee.id }}">{{ employee.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editFieldCourse" class="form-label">意向课程</label>
+                        <select class="form-select" id="createditFieldCourse" name="intended_course" required>
+                            <option value="" disabled selected></option>
+                            {% for course in courses %}
+                                <option value="{{ course.id }}">{{ course.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">创建</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 报名模态框 -->
+<!--
+<div class="modal fade" id="enrollModal" tabindex="-1" aria-labelledby="enrollModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="enrollModalLabel">安排报名</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="enrollForm">
+                    <div class="mb-3">
+                        <label for="courseName" class="form-label">课程名称</label>
+                        <input type="text" class="form-control" id="courseName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="courseHours" class="form-label">课时</label>
+                        <input type="number" class="form-control" id="courseHours" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="coursePrice" class="form-label">价格</label>
+                        <input type="number" class="form-control" id="coursePrice" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">提交订单</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+ 静态框结束-->
+<!-- Bootstrap core JavaScript-->
+
+<!-- 编辑学员的模态框 -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #d6c26a;">
+                <h5 class="modal-title" id="editModalLabel" style="color: #dee2e6">编辑学员信息</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <!-- 隐藏字段，用于存储编辑条目的ID -->
+                    <input type="hidden" id="editEnrollmentId" name="id">
+
+                    <div class="mb-3">
+                        <label for="editFieldName" class="form-label">姓名</label>
+                        <input type="text" class="form-control" id="editFieldName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editFieldPhone" class="form-label">联系方式</label>
+                        <input type="number" class="form-control" id="editFieldPhone" name="phone" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editFieldChannel" class="form-label">渠道来源</label>
+                        <input type="text" class="form-control" id="editFieldChannel" name="source_channel" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editFieldTeacher" class="form-label">招生老师</label>
+                        <select class="form-select" id="editFieldTeacher" name="enrollment_teacher" required>
+                            <option value="">选择招生老师</option>
+                            {% for employee in employees %}
+                                <option value="{{ employee.id }}">{{ employee.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editFieldCourse" class="form-label">意向课程</label>
+                        <select class="form-select" id="editFieldCourse" name="intended_course" required>
+                            <option value="">选择课程</option>
+                            {% for course in courses %}
+                                <option value="{{ course.id }}">{{ course.name }}</option>
+                            {% endfor %}}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">保存修改</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 添加跟进信息的模态框 -->
+<!-- 添加跟进信息的模态框 -->
+<div class="modal fade" id="addFollowUpModal" tabindex="-1" aria-labelledby="addFollowUpModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addFollowUpModalLabel">添加跟进信息</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addFollowUpForm">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                    <input type="hidden" id="followUpEnrollmentId" name="enrollment_id">
+
+                    <!-- 姓名作为只读文本显示 -->
+                    <div class="mb-3" style="color: #c9817d">
+                        <label for="followUpName" class="form-label">姓名:</label>
+                        <span id="followUpName" class="ms-1"></span> <!-- 静态文本紧跟在姓名后 -->
+                    </div>
+
+                    <!-- 跟进状态作为只读文本显示 -->
+                    <div class="mb-3" style="color: #c9817d">
+                        <label for="followUpStatus" class="form-label">跟进状态:</label>
+                        <span id="followUpStatus" class="ms-1"></span> <!-- 静态文本显示 -->
+                    </div>
+
+                    <!-- 最近跟进时间作为只读文本显示 -->
+                    <div class="mb-3" style="color: #c9817d">
+                        <label for="lastFollowUpTime" class="form-label">最近跟进时间</label>
+                        <span id="lastFollowUpTime" class="ms-1"></span> <!-- 静态文本显示 -->
+                    </div>
+
+                    <!-- 下一次跟进时间作为下拉框 -->
+                    <div class="mb-3">
+                        <label for="nextFollowUpTime" class="form-label">下一次跟进时间</label>
+                        <select class="form-select" id="nextFollowUpTime" name="next_follow_up_time" required>
+                            <option value="8小时后">8小时后</option>
+                            <option value="1天后">1天后</option>
+                        </select>
+                    </div>
+
+                    <!-- 跟进备注 -->
+                    <div class="mb-3">
+                        <label for="followUpNotes" class="form-label">跟进备注</label>
+                        <textarea class="form-control" id="followUpNotes" name="follow_up_notes" rows="3"
+                                  required></textarea>
+                    </div>
+
+                    <!-- 跟进记录区域 -->
+                    <div class="mb-3">
+                        <label class="form-label">历史跟进记录</label>
+                        <button class="btn btn-link" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#followUpHistoryCollapse" aria-expanded="false"
+                                aria-controls="followUpHistoryCollapse">
+                            点击查看
+                        </button>
+                        <div id="followUpHistoryCollapse" class="collapse">
+                            <div id="followUpHistory"
+                                 style="max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; background-color: #f9f9f9;">
+                                <!-- 历史跟进信息会在这里动态插入 -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">保存跟进信息</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="{% static 'js/jquery.js' %}"></script>
+<script src="{% static 'js/datatables.js' %}"></script>
+<script src="{% static 'js/bootstrap5.bundle.js' %}"></script>
+<script src="{% static 'js/bootstrap.bundle.js' %}"></script>
+<script src="{% static 'js/jquery.easing.js' %}"></script>
+<script src="{% static 'js/sb-admin-2.js' %}"></script>
+<script>
+    // 定义 editEnrollment 函数
+    function editEnrollment(id) {
+        fetch(`/get_enrollment/${id}/`)  // 假设您有一个获取单个报名信息的API
+            .then(response => response.json())
+            .then(data => {
+
+                // 填充模态框数据
+                $('#editEnrollmentId').val(data.id);
+                $('#editFieldName').val(data.name);
+                $('#editFieldPhone').val(data.phone);
+                $('#editFieldChannel').val(data.source_channel);
+                $('#editFieldTeacher').val(data.enrollment_teacher_id); // 设置选中值
+                $('#editFieldCourse').val(data.intended_course_id); // 设置选中值
+                // 打开模态框
+                $('#editModal').modal('show');
+                console.log('API Response:', data);
+
+            })
+
+
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    //打开添加跟进模态框并加载对应的信息
+    function addFollowUp(enrollmentId) {
+        fetch(`/get_enrollment_follow_up/${enrollmentId}/`)
+            .then(response => response.json())
+            .then(data => {
+                $('#followUpEnrollmentId').val(enrollmentId);
+                $('#followUpName').text(data.name);  // 显示学员姓名
+                $('#followUpStatus').text(data.follow_up_status);  // 显示跟进状态
+                const lastFollowUpTime = new Date(data.last_follow_up_time).toLocaleString();
+                $('#lastFollowUpTime').text(lastFollowUpTime);  // 最近跟进时间
+                const nextFollowUpTime = new Date(data.next_follow_up_time).toLocaleString();
+                $('#nextFollowUpTime').val(nextFollowUpTime);  // 下次跟进时间
+                $('#followUpNotes').val(data.follow_up_notes);  // 显示备注
+
+                // 显示历史跟进记录
+                const followUpHistory = $('#followUpHistory');
+                followUpHistory.empty();  // 清空历史记录
+                data.history.forEach(note => {
+                    followUpHistory.append(`<p>${note.time}: ${note.text}</p>`);
+                });
+
+                $('#addFollowUpModal').modal('show');  // 显示模态框
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    $(document).ready(function () {
+        // 初始化 DataTables，并存储实例
+        var table = $('#studentsTable').DataTable({
+            ordering: false, // 禁用排序功能
+
+            language: {
+                processing: "处理中...",
+                lengthMenu: "显示 _MENU_ 项结果",
+                zeroRecords: "没有匹配结果",
+                info: "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                infoEmpty: "显示第 0 至 0 项结果，共 0 项",
+                infoFiltered: "(由 _MAX_ 项结果过滤)",
+                search: "搜索:",
+                searchPlaceholder: "输入搜索内容",
+                emptyTable: "表中数据为空",
+                loadingRecords: "载入中...",
+                infoThousands: ",",
+                paginate: {
+                    first: "首页",
+                    previous: "上页",
+                    next: "下页",
+                    last: "末页"
+                },
+                aria: {
+                    paginate: {
+                        first: "首页",
+                        previous: "上页",
+                        next: "下页",
+                        last: "末页"
+                    },
+                    sortAscending: ": 以升序排列此列",
+                    sortDescending: ": 以降序排列此列"
+                },
+                thousands: "."
+            }
+        });
+
+        // 全选功能
+        $('#selectAll').click(function () {
+            var isChecked = $(this).is(':checked');
+            $('.student-checkbox').prop('checked', isChecked);
+        });
+
+        // 单个选择时，更新全选状态
+        $(document).on('click', '.student-checkbox', function () {
+            if (!$(this).is(':checked')) {
+                $('#selectAll').prop('checked', false);
+            } else if ($('.student-checkbox:checked').length === $('.student-checkbox').length) {
+                $('#selectAll').prop('checked', true);
+            }
+        });
+
+        // 提交表单并动态更新表格
+        $('#createForm').on('submit', function (event) {
+            event.preventDefault();  // 阻止表单默认提交
+
+            const formData = new FormData(event.target);
+
+            fetch('{% url "recruit" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'), // 获取 CSRF Token
+                }
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error('网络错误');  // 检查请求是否成功
+                    return response.json();  // 解析 JSON 响应
+                })
+                .then(data => {
+                    console.log(data);  // 输出数据以检查是否正确
+                    // 提交成功后，刷新当前页面
+                    window.location.reload();  // 刷新页面
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('提交出错，请重试。');  // 提示错误信息
+                });
+        });
+
+
+        // 动态更新表格的函数
+        function updateTable(data) {
+            const table = $('#studentsTable').DataTable();
+            table.row.add([
+                `<div class="d-flex align-items-center">
+                <input type="checkbox" class="student-checkbox form-check-input" value="${data.id}">
+                <span></span>
+            </div>`,
+                data.name,
+                data.phone,
+                data.intended_course,
+                data.source_channel,
+                data.enrollment_teacher,
+                `<select class="form-select">
+                <option ${data.follow_up_status === '失效' ? 'selected' : ''}>失效</option>
+                <option ${data.follow_up_status === '跟进中' ? 'selected' : ''}>跟进中</option>
+                <option ${data.follow_up_status === '待跟进' ? 'selected' : ''}>待跟进</option>
+                <option ${data.follow_up_status === '已签约' ? 'selected' : ''}>已签约</option>
+                <option ${data.follow_up_status === '已邀约' ? 'selected' : ''}>已邀约</option>
+            </select>`,
+                data.last_follow_up_time,
+                data.next_follow_up_time,
+                `<button class="btn btn-warning btn-sm" onclick="editEnrollment(${data.id})">编辑</button>
+                 <button class="btn btn-warning btn-sm" onclick="addFollowUp(${data.id})">添加跟进</button>`
+            ]).draw(); // 使用DataTable的API添加行并绘制
+        }
+
+        // 删除选中行
+        $('#deleteSelected').click(function () {
+            let selectedIds = [];
+            $('.student-checkbox:checked').each(function () {
+                selectedIds.push($(this).val());
+            });
+
+            // 发送 POST 请求
+            fetch('{% url "delete_enrollment" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),  // 传递 CSRF token
+                },
+                body: JSON.stringify({ids: selectedIds})  // 将选中的 ID 列表作为 JSON 传递
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 使用DataTable的API删除相应行
+                        $('.student-checkbox:checked').each(function () {
+                            table.row($(this).closest('tr')).remove().draw();
+                        });
+                        alert('删除成功！');
+                    } else {
+                        alert('请选择一个或多个选项。');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+
+        // 当点击编辑按钮时，打开模态框并填充数据
+        $('.edit-button').on('click', function () {
+            let enrollmentId = $(this).data('id');  // 获取点击编辑按钮的数据ID
+            editEnrollment(enrollmentId); // 调用 editEnrollment 函数
+        });
+
+
+        // 提交修改
+        $('#editForm').on('submit', function (event) {
+            event.preventDefault();
+            let formData = new FormData(this);
+
+            // 发送PUT请求更新数据
+            fetch('/update_enrollment/', {  // 需要在Django视图中设置该URL
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),  // CSRF token
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 关闭模态框
+                        $('#editModal').modal('hide');
+                        // 刷新页面或更新表格行数据
+                        location.reload(); // 或者可以通过JavaScript动态更新表格
+                    } else {
+                        alert('更新失败，请重试。');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+
+        $(document).on('change', '.form-select', function () {
+            const enrollmentId = $(this).closest('tr').find('button[onclick^="editEnrollment"]').attr('onclick').match(/\d+/)[0]; // 获取当前行的 enrollment ID
+            const newStatus = $(this).val(); // 获取新的状态值
+
+            // 发送 AJAX 请求更新状态
+            fetch(`/update_follow_up_status/${enrollmentId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'), // 获取 CSRF Token
+                },
+                body: JSON.stringify({follow_up_status: newStatus}) // 发送新的状态
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('状态更新成功');
+                    } else {
+                        console.error('状态更新失败');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        //添加跟进
+        $('#addFollowUpForm').submit(function (event) {
+            event.preventDefault();
+            const enrollmentId = $('#followUpEnrollmentId').val();
+            const followUpNotes = $('#followUpNotes').val();
+            const nextFollowUpTimeOption = $('#nextFollowUpTime').val();
+
+            // 获取当前时间
+            const currentTime = new Date();
+
+            // 计算下一次跟进时间
+            let nextFollowUpTime;
+            if (nextFollowUpTimeOption === '8小时后') {
+                nextFollowUpTime = new Date(currentTime.getTime() + 8 * 60 * 60 * 1000); // 当前时间加8小时
+            } else if (nextFollowUpTimeOption === '1天后') {
+                nextFollowUpTime = new Date(currentTime.getTime() + 24 * 60 * 60 * 1000); // 当前时间加1天
+            }
+
+            fetch('/add_follow_up/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,  // Django CSRF token
+                },
+                body: JSON.stringify({
+                    enrollment_id: enrollmentId,
+                    follow_up_notes: followUpNotes,
+                    last_follow_up_time: currentTime.toISOString(),  // 最近跟进时间
+                    next_follow_up_time: nextFollowUpTime.toISOString()  // 下一次跟进时间
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert("跟进信息已保存");
+                    $('#addFollowUpModal').modal('hide');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+
+        // 获取 CSRF Token 的函数
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    });
+
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // 监听所有复选框的点击事件
+    document.querySelectorAll('.student-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const enrollmentId = this.value;
+            if (this.checked) {
+                fetch(`/get_enrollment/${enrollmentId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // 检查数据结构是否符合预期
+                        if (data && data.name && data.phone && data.intended_course_id && data.enrollment_teacher_id) {
+                            // 将相关信息存储到localStorage
+                            localStorage.setItem('studentName', data.name);
+                            localStorage.setItem('parentContact', data.phone);
+                            localStorage.setItem('intendedCourse', data.intended_course_id);
+                            localStorage.setItem('enrollmentTeacher', data.enrollment_teacher_id);
+                        } else {
+                            console.error('Invalid data structure:', data);
+                            alert('获取数据失败，请重试。');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('获取数据失败，请重试。');
+                    });
+            } else {
+                // 如果取消选择，则清除localStorage中的信息
+                localStorage.removeItem('studentName');
+                localStorage.removeItem('parentContact');
+                localStorage.removeItem('intendedCourse');
+                localStorage.removeItem('enrollmentTeacher');
+            }
+        });
+    });
+
+    // 监听报名按钮的点击事件
+    document.getElementById('createEnrollmentButton').addEventListener('click', function() {
+        const studentName = localStorage.getItem('studentName');
+        const parentContact = localStorage.getItem('parentContact');
+        const intendedCourse = localStorage.getItem('intendedCourse');
+        const enrollmentTeacher = localStorage.getItem('enrollmentTeacher');
+
+        if (!studentName || !parentContact || !intendedCourse || !enrollmentTeacher) {
+            alert('请先选择一个选项');
+            return;
+        }
+         // 弹出确认对话框
+        const isConfirmed = confirm('是否确认报名？');
+        if (isConfirmed) {
+            // 跳转到addstudent页面
+            window.location.href = '/addstudent/';
+        }
+    });
+
+    // 获取 CSRF Token 的函数
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,174 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two Columns Layout</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh; /* 视口高度 */
+            display: flex;
+            flex-direction: row;
+        }
+
+        .left-box, .right-box {
+            flex: 1; /* 每个框占据相等的宽度 */
+            height: 100vh; /* 框的高度与视口高度相同 */
+        }
+
+        .left-box {
+            background-color: #595bc6; /* 左侧框的背景颜色 */
+            flex: 6;
+            background-image: url("{% static 'img/login01.jpeg' %}");
+            background-size: cover;
+        }
+
+        .right-box {
+            flex: 3;
+            background-color: white; /* 右侧框的背景颜色 */
+            color: white; /* 右侧框内文字颜色 */
+        }
+
+        .content {
+            padding: 20px; /* 内边距 */
+        }
+
+        .login-box {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+
+            width: 100%;
+            max-width: 400px;
+            margin: 20px; /* 外边距 */
+            min-height: 300px; /* 调整高度 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* 垂直居中 */
+        {#text-align: center; /* 水平居中 */#} height: 500px;
+
+
+        }
+
+        .login-box h2 {
+            margin: 0 0 35px;
+            color: #333;
+            font-size: 35px;
+            text-align: center;;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 88%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+
+
+        }
+
+        .form-group input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .btn {
+            width: 97%;
+            padding: 13px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-center a {
+            color: #007bff;
+            text-decoration: none;
+            display: block;
+        }
+
+        .text-center a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="left-box" style="height: 100%">
+    <div class="content">
+
+    </div>
+</div>
+
+<div class="right-box">
+    <div class="content">
+        <div class="login-box">
+            {% if messages %}
+    <ul class="messages" style="list-style-type: none; padding: 0; color: red;">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %} style="color: red; font-weight: bold;">{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+            <h2>登录</h2>
+
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+
+
+
+
+                <div class="form-group">
+                    <label for="email">用户名</label>
+
+                    <input type="text" id="用户名" name="username" placeholder="输入用户名">
+
+
+                </div>
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="密码" name="password" placeholder="输入密码">
+                </div>
+
+                <button class="btn" type="submit">登录</button>
+                <div class="text-center">
+                    <a href="#" style="margin: 19px">忘记密码</a><br>
+                    <a href="# ">创建帐户</a>
+
+
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册页面</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        .maisr {
+
+            height: 590px;
+            width: 500px;
+            box-shadow: 2px 2px 25px rgba(0,0,0,0.2);
+            margin-right: auto;
+            margin-left: auto;
+            margin-top:4%;
+            border-radius: 20px;
+            border: 1px solid whitesmoke;
+        }
+
+        .text {
+            text-align: center;
+            margin-top: 17px;
+            background: white;
+        }
+        .text a{
+            text-decoration: none;
+        }
+        .text a:hover{
+            color: #7777d7;
+        }
+
+         .content {
+            padding: 20px; /* 内边距 */
+        }
+
+        .login-box {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+
+            width: 100%;
+            max-width: 400px;
+            margin: 20px; /* 外边距 */
+            min-height: 300px; /* 调整高度 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* 垂直居中 */
+        {#text-align: center; /* 水平居中 */#} height: 500px;
+
+
+        }
+
+        .login-box h2 {
+            margin: 0 0 35px;
+            color: #333;
+            font-size: 35px;
+            text-align: center;;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            margin-left: 12%;
+        }
+
+        .form-group input {
+            width:70%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            margin-left: 12%;
+
+
+        }
+
+        .form-group input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .btn {
+            width: 77%;
+            padding: 13px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 12px;
+            margin-left: 12%;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-center a {
+            color: #007bff;
+            text-decoration: none;
+            display: block;
+        }
+
+        .text-center a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="maisr">
+    <div class="text">
+        <h1>注册页面</h1>
+    </div>
+    <div class="form-group">
+        <label>用户名</label>
+        <input type="text" id="注册用户名" placeholder="输入用户名">
+    </div>
+    <div class="form-group">
+        <label>密码</label>
+        <input type="password" id="注册密码" placeholder="输入密码">
+    </div>
+    <div class="form-group">
+        <label>重复密码</label>
+        <input type="password" id="重复密码" placeholder="再次输入密码">
+    </div>
+    <button class="btn">注册账户</button>
+    <div class="text">
+        <a href="#">已经有账户了!登录</a>
+
+    </div>
+    <div class="text">
+        <a href="#">忘记密码?</a>
+    </div>
+</div>
+</body>
+</html>
